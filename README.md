@@ -29,22 +29,7 @@ Avant de commencer, assurez-vous d'avoir installé Python sur votre machine. Vou
    ```
 ## Installation des dépendances
 
-1. Ouvrez un terminal ou une invite de commande.
-2. Naviguez jusqu'au répertoire où se trouve le fichier `app.py`.
-3. Créez un environnement virtuel (optionnel mais recommandé) :
-   ```bash
-   python3 -m venv venv
-   ```
-4. Activez l'environnement virtuel :
-   - Sur Windows :
-     ```bash
-     venv\Scripts\activate
-     ```
-   - Sur macOS/Linux :
-     ```bash
-     source venv/bin/activate
-     ```
-5. Installez les dépendances nécessaires en utilisant le fichier `requirements.txt` :
+4. Installez les dépendances nécessaires en utilisant le fichier `requirements.txt` :
    ```bash
    pip install -r requirements.txt
    ```
@@ -54,7 +39,7 @@ Avant de commencer, assurez-vous d'avoir installé Python sur votre machine. Vou
 1. Assurez-vous que le fichier `SOUNDBOARD.csv` est présent dans le même répertoire que `app.py`.
 2. Exécutez le script Python :
    ```bash
-   python app.py
+   python3 app.py
    ```
 3. Le programme analysera les données et générera des visualisations dans un dossier nommé `visualizations`.
 
