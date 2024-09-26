@@ -100,7 +100,6 @@ def create_visualizations(results_df):
     for sound in results_df.index:
         create_visualizations_for_sound(sound, results_df)
 
-print("\033[92mToutes les visualisations ont été générées dans le dossier 'visualizations'.\033[0m")
 def safe_eval(x):
     if isinstance(x, list):
         return x
@@ -222,6 +221,7 @@ def main():
         results_df['All Keywords'] = results_df['All Keywords'].apply(safe_eval)
         results_df['Distribution of Ratings'] = results_df['Distribution of Ratings'].apply(safe_eval)
         create_visualizations(results_df)
+        print("\033[92mToutes les visualisations ont été générées dans le dossier 'visualizations'.\033[0m")
     else:
         print("Aucun résultat à visualiser.")
 
