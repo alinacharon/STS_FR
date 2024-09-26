@@ -206,6 +206,41 @@ def create_visualizations_for_sound(sound, results_df):
     plt.savefig(f'visualizations/visualization_{sound}.png', dpi=300, bbox_inches='tight')
     print(f"Les visualisations pour {sound} ont été sauvegardées dans 'visualizations/visualization_{sound}.png'")
     plt.close()
+sns.set_theme(style="whitegrid")
+sns.set_palette("deep")
+plt.rcParams['font.sans-serif'] = ['Helvetica', 'Arial']
+plt.rcParams['font.family'] = 'sans-serif'
+
+# Load the analysis results
+results_df = pd.read_csv('analysis_results.csv', index_col=0)
+
+# Sort sounds by average attractiveness rating in descending order
+sorted_sounds = results_df.sort_values(by='Average Attractiveness Rating', ascending=False)
+
+# Create the visualization
+plt.figure(figsize=(12, 10))
+ax = sns.barplot(x='Average Attractiveness Rating', y=sorted_sounds.index, data=sorted_sounds, 
+                 palette="YlGnBu")
+
+# Add average rating values on the bars
+for i, v in enumerate(sorted_sounds['Average Attractiveness Rating']):
+    ax.text(v + 0.1, i, f"{v:.2f}", va='center')
+
+# Set the title and labels
+plt.title("Ranking of Sounds by Average Attractiveness Rating", fontsize=20, fontweight='bold')
+plt.xlabel("Average Attractiveness Rating", fontsize=14)
+plt.ylabel("Sounds", fontsize=14)
+
+# Adjust the layout
+plt.tight_layout()
+
+# Create the 'visualizations' folder if it doesn't exist
+os.makedirs('visualizations', exist_ok=True)
+
+# Save the visualization
+plt.savefig('visualizations/sound_ranking.png', dpi=300, bbox_inches='tight')
+print("The sound ranking has been saved to 'visualizations/sound_ranking.png'")
+plt.close()
 
 # Fonction principale
 def main():
