@@ -213,7 +213,6 @@ def main():
     df = load_data()
     attractiveness_columns, keyword_columns = define_columns(df)
     results = analyze_sounds(df, attractiveness_columns, keyword_columns)
-    display_results(results)
     save_results(results)
     
     # Проверка на пустоту результатов перед визуализацией
