@@ -8,6 +8,7 @@ import os
 from ast import literal_eval
 import json
 from wordcloud import WordCloud
+import sys
 
 # Set the style
 sns.set_theme(style="whitegrid")
@@ -23,7 +24,7 @@ def load_data():
         return pd.read_csv('SOUNDBOARD.csv')
     except FileNotFoundError:
         print("\033[91mPour lancer l'analyse, veuillez placer le fichier dans le dossier avec le code et vérifier qu'il s'appelle bien SOUNDBOARD.\033[0m")
-
+        sys.exit()
 # Étape 2 : Définir les colonnes pour l'analyse
 def define_columns(df):
     attractiveness_columns = [
