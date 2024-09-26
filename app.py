@@ -15,9 +15,14 @@ sns.set_palette("deep")
 plt.rcParams['font.sans-serif'] = ['Helvetica', 'Arial']
 plt.rcParams['font.family'] = 'sans-serif'
 
+import pandas as pd
+
 # Étape 1 : Charger les données
 def load_data():
-    return pd.read_csv('SOUNDBOARD.csv')
+    try:
+        return pd.read_csv('SOUNDBOARD.csv')
+    except FileNotFoundError:
+        print("\033[91mPour lancer l'analyse, veuillez placer le fichier dans le dossier avec le code et vérifier qu'il s'appelle bien SOUNDBOARD.\033[0m")
 
 # Étape 2 : Définir les colonnes pour l'analyse
 def define_columns(df):
