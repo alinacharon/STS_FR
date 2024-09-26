@@ -61,6 +61,3 @@ Avant de commencer, assurez-vous d'avoir installé Python sur votre machine. Vou
 ## Résultats
 
 Les résultats de l'analyse seront sauvegardés dans un fichier CSV nommé `analysis_results.csv`. Les visualisations pour chaque son seront enregistrées sous forme d'images PNG dans le dossier `visualizations`.
-
-
-# STS_FR
