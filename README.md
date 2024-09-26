@@ -19,12 +19,9 @@ Avant de commencer, assurez-vous d'avoir installé Python sur votre machine. Vou
 ## Clonage du dépôt
 
 1. Ouvrez un terminal ou une invite de commande.
-2. Utilisez la commande suivante pour cloner le dépôt (remplacez `VOTRE_URL` par l'URL de votre dépôt) :
+2. Utilisez la commande suivante pour cloner le dépôt:
    ```bash
    git clone https://github.com/alinacharon/STS_FR.git
-   ```
-3. Naviguez dans le dossier du projet :
-   ```bash
    cd STS_FR
    ```
 ## Installation des dépendances
