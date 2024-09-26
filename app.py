@@ -68,23 +68,13 @@ def analyze_sounds(df, attractiveness_columns, keyword_columns):
                 "Tous les Mots Clés": get_all_keywords(df, keyword_col)
             }
     
-    # Отладочное сообщение
     if not results:
         print("Aucun résultat trouvé. Vérifiez les colonnes d'attractivité et de mots clés.")
     
     return results
 
-# Étape 4 : Afficher les résultats
-def display_results(results):
-    for sound, data in results.items():
-        print(f"\n{sound} :")
-        print(f"Note Moyenne d'Attractivité: {data['Note Moyenne d\'Attractivité']:.2f}")
-        print(f"Distribution des Évaluations: {data['Distribution des Évaluations']}")
-        print("Tous les Mots Clés:")
-        for word, count in data['Tous les Mots Clés'].items():
-            print(f"  {word} : {count}")
 
-# Étape 5 : Sauvegarder les résultats dans un fichier CSV
+# Étape 4 : Sauvegarder les résultats dans un fichier CSV
 def save_results(results):
     if not results:
         print("Les résultats sont vides. Aucune sauvegarde effectuée.")
@@ -104,8 +94,7 @@ def create_visualizations(results_df):
     for sound in results_df.index:
         create_visualizations_for_sound(sound, results_df)
 
-    print("Toutes les visualisations ont été générées dans le dossier 'visualizations'.")
-
+print("\033[92mToutes les visualisations ont été générées dans le dossier 'visualizations'.\033[0m")
 def safe_eval(x):
     if isinstance(x, list):
         return x
