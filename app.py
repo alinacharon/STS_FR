@@ -1,13 +1,13 @@
 import pandas as pd
 import numpy as np
-from collections import Counter
-import re
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 from ast import literal_eval
 import json
 from wordcloud import WordCloud
+from collections import Counter
+import re
 import sys
 
 # Set the style
@@ -23,81 +23,85 @@ def load_data():
     except FileNotFoundError:
         print("\033[91mPour lancer l'analyse, veuillez placer le fichier dans le dossier avec le code et vérifier qu'il s'appelle bien SOUNDBOARD.\033[0m")
         sys.exit()
-# Étape 2 : Définir les colonnes pour l'analyse
-def define_columns(df):
-    attractiveness_columns = [
-        col for col in df.columns if col.startswith("Sur une échelle de 1 à 7")
-    ]
-    keyword_columns = [
-        col for col in df.columns if col.startswith("Le(s) mot(s) clés que vous attribueriez")
-    ]
-    
-    return attractiveness_columns, keyword_columns
+        
+df = load_data()
+# Step 2: Define columns for analysis
+attractiveness_columns = [
+    col for col in df.columns if col.startswith("Sur une échelle de 1 à 7")]
+keyword_columns = [
+    col for col in df.columns if col.startswith("Le(s) mot(s) clés que vous attribueriez")]
 
-# Fonction pour obtenir tous les mots clés avec leur fréquence
-def get_all_keywords(df, column):
+# Function to get all keywords with their frequency
+def get_all_keywords(column):
     all_keywords = [kw.strip() for keywords in df[column].dropna()
                     for kw in keywords.split(',')]
     return Counter(all_keywords)
 
-# Fonction pour obtenir la liste complète des évaluations
-def get_full_rating_list(df, column):
+# Function to get the full list of ratings
+def get_full_rating_list(column):
     return df[column].dropna().tolist()
 
-# Fonction pour extraire le numéro du son à partir du nom de la colonne
+# Function to extract sound number from column name
 def extract_sound_number(column_name):
     match = re.search(r'\((\d+)\)', column_name)
     return match.group(1) if match else None
 
-# Fonction pour calculer la note moyenne
-def calculate_average_rating(df, column):
+# Function to calculate average rating
+def calculate_average_rating(column):
     total_sum = df[column].sum()
     total_count = df[column].count()
     return total_sum / total_count if total_count != 0 else 0
 
-# Étape 3 : Analyse pour chaque son
-def analyze_sounds(df, attractiveness_columns, keyword_columns):
-    results = {}
-    min_length = min(len(attractiveness_columns), len(keyword_columns))  # Определяем минимальную длину
-    for i in range(min_length):
-        sound_number = extract_sound_number(attractiveness_columns[i])
-        if sound_number:
-            sound_name = f"Son {sound_number}"
-            attractiveness_col = attractiveness_columns[i]
-            keyword_col = keyword_columns[i]
+# Step 3: Analysis for each sound
+results = {}
 
-            results[sound_name] = {
-                "Note Moyenne d'Attractivité": calculate_average_rating(df, attractiveness_col),
-                "Distribution des Évaluations": get_full_rating_list(df, attractiveness_col),
-                "Tous les Mots Clés": get_all_keywords(df, keyword_col)
-            }
-    
-    if not results:
-        print("Aucun résultat trouvé. Vérifiez les colonnes d'attractivité et de mots clés.")
-    
-    return results
+for i in range(len(attractiveness_columns)):
+    sound_name = f"Son {i + 1}"  # Изменено для использования порядка колонок
+    attractiveness_col = attractiveness_columns[i]
+    keyword_col = keyword_columns[i]
+
+    results[sound_name] = {
+        "Note Moyenne d’Attractivité": calculate_average_rating(attractiveness_col),
+        "Distribution des Évaluations": get_full_rating_list(attractiveness_col),
+        "Tous les Mots Clés": get_all_keywords(keyword_col)
+    }
 
 
-# Étape 4 : Sauvegarder les résultats dans un fichier CSV
-def save_results(results):
-    if not results:
-        print("Les résultats sont vides. Aucune sauvegarde effectuée.")
-        return
-    
-    results_df = pd.DataFrame(results).T
-    results_df.columns = ['Average Attractiveness Rating', 'Distribution of Ratings', 'All Keywords']
-    results_df.to_csv('analysis_results.csv')
-    print("\nLes résultats de l'analyse ont été sauvegardés dans 'analysis_results.csv'")
+# Step 4: Save the results to a CSV file
+results_df = pd.DataFrame(results).T
+results_df.to_csv('analysis_results.csv')
 
-# Visualisation des résultats
-def create_visualizations(results_df):
-    # Créer le dossier 'visualizations' s'il n'existe pas
-    os.makedirs('visualizations', exist_ok=True)
+# Load the analysis results for visualization
+results_df = pd.read_csv('analysis_results.csv', index_col=0)
 
-    # Создание визуализаций для каждого звука
-    for sound in results_df.index:
-        create_visualizations_for_sound(sound, results_df)
+# Sort sounds by Note Moyenne d’Attractivité in descending order
+sorted_sounds = results_df.sort_values(by='Note Moyenne d’Attractivité', ascending=False)
 
+# Create the visualization
+plt.figure(figsize=(12, 10))
+ax = sns.barplot(x='Note Moyenne d’Attractivité', y=sorted_sounds.index, data=sorted_sounds, 
+                 palette="YlGnBu")
+
+# Add average rating values on the bars
+for i, v in enumerate(sorted_sounds['Note Moyenne d’Attractivité']):
+    ax.text(v + 0.1, i, f"{v:.2f}", va='center')
+
+# Set the title and labels
+plt.title("Classement des Sons par la Note Moyenne d’Attractivité", fontsize=20, fontweight='bold')
+plt.xlabel("Note Moyenne d’Attractivité", fontsize=14)
+plt.ylabel("Sons", fontsize=14)
+
+# Adjust the layout
+plt.tight_layout()
+
+# Create the 'visualizations' folder if it doesn't exist
+os.makedirs('visualizations', exist_ok=True)
+
+# Save the visualization
+plt.savefig('visualizations/sound_ranking.png', dpi=300, bbox_inches='tight')
+plt.close()
+
+# Function to safely convert strings to lists
 def safe_eval(x):
     if isinstance(x, list):
         return x
@@ -115,13 +119,17 @@ def safe_eval(x):
                     return {}
     return x
 
-def create_visualizations_for_sound(sound, results_df):
+# Convert strings to lists
+results_df['Tous les Mots Clés'] = results_df['Tous les Mots Clés'].apply(safe_eval)
+results_df['Distribution des Évaluations'] = results_df['Distribution des Évaluations'].apply(safe_eval)
+
+def create_visualizations_for_sound(sound):
     fig, axs = plt.subplots(2, 2, figsize=(20, 20))
     fig.suptitle(f"Analyse de {sound}", fontsize=24, fontweight='bold', y=0.95)
     
     # 1. Average rating and response distribution
-    average = results_df.loc[sound, 'Average Attractiveness Rating']
-    distribution = results_df.loc[sound, 'Distribution of Ratings']
+    average = results_df.loc[sound, 'Note Moyenne d’Attractivité']
+    distribution = results_df.loc[sound, 'Distribution des Évaluations']
 
     # Create a full list of ratings from 1 to 7
     rating_counts = Counter(distribution)
@@ -153,7 +161,7 @@ def create_visualizations_for_sound(sound, results_df):
                    horizontalalignment='center', transform=axs[0, 0].transAxes, fontsize=14)
     
     # 3. Number of people attributing each keyword
-    all_keywords = results_df.loc[sound, 'All Keywords']
+    all_keywords = results_df.loc[sound, 'Tous les Mots Clés']
     if isinstance(all_keywords, dict):
         keywords = list(all_keywords.keys())
         occurrences = list(all_keywords.values())
@@ -177,6 +185,7 @@ def create_visualizations_for_sound(sound, results_df):
     else:
         axs[0, 1].text(0.5, 0.5, "Aucun mot clé disponible", ha='center', va='center', fontsize=14)
         axs[0, 1].axis('off')
+        axs[0, 1].axis('off')
 
     # 4. Word cloud for all keywords
     if isinstance(all_keywords, dict):
@@ -188,69 +197,27 @@ def create_visualizations_for_sound(sound, results_df):
         axs[1, 0].imshow(wordcloud, interpolation='bilinear')
         axs[1, 0].set_title("Nuage de Mots Clés", fontsize=18)
     else:
-        axs[1, 0].text(0.5, 0.5, "Aucun mot clé disponible", ha='center', va='center', fontsize=14)
+        axs[1, 0].text(0.5, 0.5, "No keywords available", ha='center', va='center', fontsize=14)
     axs[1, 0].axis('off')
     
-    # 5. Rating distribution (violin plot)
+    # 5. Distribution des Évaluations (violin plot)
     ratings = distribution
     
     sns.violinplot(y=ratings, ax=axs[1, 1], inner="box", color="skyblue")
     axs[1, 1].set_title(f"Distribution des Évaluations", fontsize=18)
-    axs[1, 1].set_ylabel("Évaluation", fontsize=14)
+    axs[1, 1].set_ylabel("Rating", fontsize=14)
     axs[1, 1].set_ylim(0.5, 7.5)
     axs[1, 1].set_yticks(range(0, 8))
     
+    # Create the "visualizations" folder if it doesn't exist
+    os.makedirs('visualizations', exist_ok=True)
+
     # Save the visualization in the "visualizations" folder
     plt.savefig(f'visualizations/visualization_{sound}.png', dpi=300, bbox_inches='tight')
-    print(f"Les visualisations pour {sound} ont été sauvegardées dans 'visualizations/visualization_{sound}.png'")
     plt.close()
 
-# Fonction principale
-def main():
-    df = load_data()
-    attractiveness_columns, keyword_columns = define_columns(df)
-    results = analyze_sounds(df, attractiveness_columns, keyword_columns)
-    save_results(results)
-    
-    # Проверка на пустоту результатов перед визуализацией
-    if results:
-        # Charger les résultats pour la visualisation
-        results_df = pd.read_csv('analysis_results.csv', index_col=0)
-        results_df['All Keywords'] = results_df['All Keywords'].apply(safe_eval)
-        results_df['Distribution of Ratings'] = results_df['Distribution of Ratings'].apply(safe_eval)
-        create_visualizations(results_df)
-        
-        
-        # Вызов функции для создания визуализации ранжирования звуков
-        create_sound_ranking_visualization(results_df)
-    else:
-        print("Aucun résultat à visualiser.")
+# Create visualizations for each sound
+for sound in results_df.index:
+    create_visualizations_for_sound(sound)
 
-def create_sound_ranking_visualization(results_df):
-    # Sort sounds by average attractiveness rating in descending order
-    sorted_sounds = results_df.sort_values(by='Average Attractiveness Rating', ascending=False)
-
-    # Create the visualization
-    plt.figure(figsize=(12, 10))
-    ax = sns.barplot(x='Average Attractiveness Rating', y=sorted_sounds.index, data=sorted_sounds, 
-                     palette="YlGnBu")
-
-    # Add average rating values on the bars
-    for i, v in enumerate(sorted_sounds['Average Attractiveness Rating']):
-        ax.text(v + 0.1, i, f"{v:.2f}", va='center')
-
-    # Set the title and labels
-    plt.title("Ranking of Sounds by Average Attractiveness Rating", fontsize=20, fontweight='bold')
-    plt.xlabel("Average Attractiveness Rating", fontsize=14)
-    plt.ylabel("Sounds", fontsize=14)
-
-    # Adjust the layout
-    plt.tight_layout()
-
-    # Save the visualization
-    plt.savefig('visualizations/sound_ranking.png', dpi=300, bbox_inches='tight')
-
-    plt.close()
-    print("\033[92mToutes les visualisations ont été générées dans le dossier 'visualizations'.\033[0m")
-if __name__ == "__main__":
-    main()
+print("\033[92mToutes les visualisations ont été générées dans le dossier 'visualizations'.\033[0m")
