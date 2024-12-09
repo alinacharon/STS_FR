@@ -1,5 +1,4 @@
 # Projet d'Analyse de Sons FR 🇫🇷 
-⛔️ Attention, nécessite la vérification des données pour le premier lancement.
 
 
 Ce projet permet d'analyser des sons à partir d'un fichier CSV nommé `SOUNDBOARD.csv`. Il génère des visualisations basées sur les évaluations et les mots clés associés à chaque son.
