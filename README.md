@@ -48,4 +48,3 @@ Pip est généralement inclus avec les versions récentes de Python. Si vous dev
 ## Résultats
 
 Les résultats de l'analyse seront sauvegardés dans un fichier CSV nommé `analysis_results.csv`. Les visualisations pour chaque son seront enregistrées sous forme d'images PNG dans le dossier `visualizations`.
-# STS_ENG
