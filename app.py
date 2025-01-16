@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
@@ -16,7 +15,7 @@ sns.set_palette("deep")
 plt.rcParams['font.sans-serif'] = ['Helvetica', 'Arial']
 plt.rcParams['font.family'] = 'sans-serif'
 
-# Étape 1 : Charger les données
+# Step 1 : Load data
 def load_data():
     try:
         return pd.read_csv('SOUNDBOARD.csv')
@@ -25,6 +24,7 @@ def load_data():
         sys.exit()
         
 df = load_data()
+
 # Step 2: Define columns for analysis
 attractiveness_columns = [
     col for col in df.columns if col.startswith("Sur une échelle de 1 à 7")]
